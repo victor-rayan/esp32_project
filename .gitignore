@@ -1,4 +1,9 @@
 sdkconfig
+sdkconfig.old
 /build
 .vscode
 .devcontainer
+sdkconfig
+build/*
+.vscode/*
+sdkconfig.old
