@@ -16,6 +16,7 @@
 #include <driver/gpio.h>
 #include "driver/rtc_io.h"
 #include "luzQuarto.h"
+#include "driver/touch_pad.h"
 
 #include "wifi.h"
 #include "mqtt.h"
@@ -52,8 +53,27 @@ void trataComunicacaoComServidor(void * params)
   }
 }
 
+void touch_task(void *pvParameters) {
+    touch_pad_intr_enable();
+    while (1) {
+        uint32_t pad_status = touch_pad_get_status();
+        if (pad_status & (1 << TOUCH_PAD_NUM0)) {
+            printf("Pad 1");
+            touch_pad_clear_status();
+        }
+        // Lidar com outros pads, se necessário
+        vTaskDelay(pdMS_TO_TICKS(10)); // Pequeno atraso antes de verificar novamente
+    }
+}
+
 void app_main(void)
 {
+    touch_pad_init();
+    touch_pad_set_fsm_mode(TOUCH_FSM_MODE_TIMER);
+    touch_pad_set_voltage(TOUCH_HVOLT_2V7, TOUCH_LVOLT_0V5, TOUCH_HVOLT_ATTEN_1V);
+    touch_pad_config(TOUCH_PAD_NUM0, 0);
+    touch_pad_filter_start(10);
+    touch_pad_set_thresh(TOUCH_PAD_NUM0, 700);
     // Inicializa o NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -65,10 +85,11 @@ void app_main(void)
     conexaoWifiSemaphore = xSemaphoreCreateBinary();
     conexaoMQTTSemaphore = xSemaphoreCreateBinary();
     wifi_start();
-    ledConfig();
+    // ledConfig();
     
 
     xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
     xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
-    xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
+    // xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
+    xTaskCreate(&touch_task, "touch_task", 2048, NULL, 5, NULL);
 }
