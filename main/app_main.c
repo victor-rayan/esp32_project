@@ -6,6 +6,18 @@
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "freertos/semphr.h"
+#include <stdlib.h>
+#include <time.h>
+#include <sys/time.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_sleep.h"
+#include "esp32/rom/uart.h"
+#include <driver/gpio.h>
+#include "driver/rtc_io.h"
+
+#define BOTAO 0
+#define LED 2
 
 #include "wifi.h"
 #include "mqtt.h"
@@ -23,6 +35,55 @@ void conectadoWifi(void * params)
       mqtt_start();
     }
   }
+}
+
+void luzEsp(bool acao)
+{
+  esp_rom_gpio_pad_select_gpio(LED);
+  gpio_set_direction(LED, GPIO_MODE_OUTPUT);
+  if(acao)
+    gpio_set_level(LED, 1);
+  else
+    gpio_set_level(LED, 0);
+}
+
+void ligaBotao()
+{
+    esp_rom_gpio_pad_select_gpio(BOTAO);
+    gpio_set_direction(BOTAO, GPIO_MODE_INPUT);
+
+    bool botaoPressionado = false;
+    bool funcionalidadeHabilitada = false;
+
+    while (true)
+    {
+      if (gpio_get_level(BOTAO) == 0)
+      {
+        if (!botaoPressionado)
+        {      
+          printf("Botão de enable pressionado\n");
+          botaoPressionado = true;
+
+          funcionalidadeHabilitada = !funcionalidadeHabilitada;
+
+          if (funcionalidadeHabilitada)
+          {
+            printf("Funcionalidade habilitada\n");
+            luzEsp(true);
+          }
+          else
+          {
+            printf("Funcionalidade desabilitada\n");
+            luzEsp(false);
+          }
+        }
+      }
+      else
+      {
+        botaoPressionado = false;
+      }
+      vTaskDelay(pdMS_TO_TICKS(10));  
+    }
 }
 
 void trataComunicacaoComServidor(void * params)
@@ -56,7 +117,9 @@ void app_main(void)
     conexaoWifiSemaphore = xSemaphoreCreateBinary();
     conexaoMQTTSemaphore = xSemaphoreCreateBinary();
     wifi_start();
+    
 
     xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
     xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
+    xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
 }
