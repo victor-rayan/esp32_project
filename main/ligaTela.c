@@ -9,14 +9,26 @@
 
 #define LED_GPIO_PIN  GPIO_NUM_2
 
+void desligaTelaTask(void *pvParameters)
+{
+  vTaskDelay(10000 / portTICK_PERIOD_MS);  // Atraso de 10 segundos
+  gpio_set_level(LED_GPIO_PIN, 0);  // Desliga a tela
+  vTaskDelete(NULL);  // Exclui a tarefa
+}
+
 void controleLuzEsp(bool acao)
 {
-  esp_rom_gpio_pad_select_gpio(LED_GPIO_PIN );
-  gpio_set_direction(LED_GPIO_PIN , GPIO_MODE_OUTPUT);
-  if(acao)
-    gpio_set_level(LED_GPIO_PIN , 1);
+  esp_rom_gpio_pad_select_gpio(LED_GPIO_PIN);
+  gpio_set_direction(LED_GPIO_PIN, GPIO_MODE_OUTPUT);
+  if (acao)
+  {
+    gpio_set_level(LED_GPIO_PIN, 1);
+    xTaskCreate(&desligaTelaTask, "Desliga Tela", 2048, NULL, 5, NULL);  
+  }
   else
-    gpio_set_level(LED_GPIO_PIN , 0);
+  {
+    gpio_set_level(LED_GPIO_PIN, 0);
+  }
 }
 
 void touchTask(void *pvParameters) {
