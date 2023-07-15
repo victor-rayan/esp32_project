@@ -67,12 +67,12 @@ void app_main(void) {
     conexaoWifiSemaphore = xSemaphoreCreateBinary();
     conexaoMQTTSemaphore = xSemaphoreCreateBinary();
     wifi_start();
-    // ledConfig();
+    ledConfig();
     
 
     xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
     xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
-    // xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
+    xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
     initTouch();
     xTaskCreate(&touchTask, "touchTask", 2048, NULL, 5, NULL);
 }
