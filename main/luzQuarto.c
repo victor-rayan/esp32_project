@@ -4,6 +4,7 @@
 #include "driver/ledc.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "json_parser.c"
 
 #define BOTAO_GPIO_PIN   GPIO_NUM_0
 #define LED_GPIO_PIN     GPIO_NUM_2
@@ -84,22 +85,24 @@ void ligaBotao()
       {
         if (!botaoPressionado)
         {      
+          printf("cor led: %d", corLed);
           botaoPressionado = true;
-          cont++;
-
-          if (cont == 1) setRGB(50,205,153); // Aquamarine Médio
-          if (cont == 2) setRGB(107,35,142); // Azul Ardósia Escuro
-          if (cont == 3) setRGB(92,51,23); // Baker's Chocolate
-          if (cont == 4) setRGB(255,165,0); // Laranja
-          if (cont == 5) setRGB(255,0,255); // Magenta
-          if (cont == 6) setRGB(230,232,250); // Silver
-          if (cont == 7) setRGB(35,142,35); // Verde Floresta
-          if (cont == 8) setRGB(255,0,0); // Vermelho
-          if (cont == 9){
-            setRGB(0,0,0);
-            cont = 0;
-          }
-          
+          if (corLed == RED)
+            setRGB(255,0,0); // Vermelho
+          if (corLed == BLUE)
+            setRGB(0,0,255); // Azul
+          if (corLed == GREEN)
+            setRGB(0,255,0); // Verde
+          if (corLed == YELLOW)
+            setRGB(255,255,0); // Amarelo
+          if (corLed == MAGENTA)
+            setRGB(255,0,255); // Magenta
+          if (corLed == CHOCOLATE)
+            setRGB(92,51,23); // Baker's Chocolate
+          if (corLed == ARDOSIA)
+            setRGB(107,35,142); // Azul Ardósia Escuro
+          if (corLed == FLORESTA)
+            setRGB(35,142,35); // Verde Floresta
         }
       }
       else

@@ -6,30 +6,60 @@
 
 #define TAG "JSON_PARSER"
 
+int corLed;
+
 int json_parse_return_comm(const char *const json)
 {
   if (strstr(json, "azul"))
   {
-    printf("aqui no azul");
+    corLed = BLUE;
     return BLUE;
   }
 
   if (strstr(json, "verde"))
   {
-    printf("aqui no verde");
+    corLed = GREEN;
     return GREEN;
   }
 
   if (strstr(json, "vermelho"))
   {
-    printf("aqui no vermelho");
+    corLed = RED;
     return RED;
   }
 
   if (strstr(json, "amarelo"))
   {
-    printf("aqui no amarelo");
+    corLed = YELLOW;
     return YELLOW;
+  }
+
+  if (strstr(json, "ardosia"))
+  {
+    corLed = ARDOSIA;
+    printf("ardosia");
+    return ARDOSIA;
+  }
+
+  if (strstr(json, "magenta"))
+  {
+    corLed = MAGENTA;
+    printf("magenta");
+    return MAGENTA;
+  }
+
+  if (strstr(json, "floresta"))
+  {
+    printf("floresta");
+    corLed = FLORESTA;
+    return FLORESTA;
+  }
+
+  if (strstr(json, "chocolate"))
+  {
+    corLed = CHOCOLATE;
+    printf("chocolate");
+    return CHOCOLATE;
   }
 
   if (strstr(json, "on"))
