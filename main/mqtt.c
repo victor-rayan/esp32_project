@@ -18,6 +18,8 @@
 #include "esp_log.h"
 #include "mqtt_client.h"
 
+#include "json_parser.h"
+
 #include "mqtt.h"
 
 #define TAG "MQTT"
@@ -25,10 +27,46 @@
 extern SemaphoreHandle_t conexaoMQTTSemaphore;
 esp_mqtt_client_handle_t client;
 
+int systemON = 0;
+
 static void log_error_if_nonzero(const char *message, int error_code)
 {
     if (error_code != 0) {
         ESP_LOGE(TAG, "Last error %s: 0x%x", message, error_code);
+    }
+}
+
+void parse_event_data(char *data)
+{   
+    char json_message[100];
+    switch (json_parse_return_comm(data))
+    {
+     case TURN_SYSTEM:
+        if (systemON == 0) {
+            ESP_LOGI(TAG, "Turn on System");
+            systemON = 1;
+        } else {
+            ESP_LOGI(TAG, "Turn off System");
+            systemON = 0;
+        }
+        snprintf(json_message, sizeof(json_message), "{\"led_sys_on\": %d}", systemON);
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        break;
+    case GREEN:
+        mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
+        break;
+    case BLUE:
+        mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
+        break;
+    case RED:
+        mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
+        break;
+    case YELLOW:
+        mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
+        break;
+
+    default:
+        break;
     }
 }
 
@@ -61,6 +99,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
         printf("DATA=%.*s\r\n", event->data_len, event->data);
+        parse_event_data(event->data);
         break;
     case MQTT_EVENT_ERROR:
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
