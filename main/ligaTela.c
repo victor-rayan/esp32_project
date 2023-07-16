@@ -9,49 +9,51 @@
 #define TOUCH_DELAY_MS      200
 
 #define LED_GPIO_PIN  GPIO_NUM_2
+bool ligado = false;
+char json_message[100];
 
-void desligaTelaTask(void *pvParameters) {
-  vTaskDelay(10000 / portTICK_PERIOD_MS);  // Atraso de 10 segundos
-  gpio_set_level(LED_GPIO_PIN, 0);  // Desliga a tela
-  vTaskDelete(NULL);  // Exclui a tarefa
-}
+// void desligaTelaTask(void *pvParameters) {
+//   vTaskDelay(10000 / portTICK_PERIOD_MS);  // Atraso de 10 segundos
+//   gpio_set_level(LED_GPIO_PIN, 0); 
+//   systemON = 0;
+//   ligado = false;
+//   snprintf(json_message, sizeof(json_message), "{\"led_sys_on\": %d}", systemON);
+//   mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message); // Desliga a tela
+//   vTaskDelete(NULL);  // Exclui a tarefa
+// }
 
 void controleLuzEsp(bool acao) {
   esp_rom_gpio_pad_select_gpio(LED_GPIO_PIN);
   gpio_set_direction(LED_GPIO_PIN, GPIO_MODE_OUTPUT);
-
+  
   if (acao) {
     gpio_set_level(LED_GPIO_PIN, 1);
-    xTaskCreate(&desligaTelaTask, "Desliga Tela", 2048, NULL, 5, NULL);  
+    systemON = 1;
+    ligado = true;
+    snprintf(json_message, sizeof(json_message), "{\"led_sys_on\": %d}", systemON);
+    mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+    
+    // xTaskCreate(&desligaTelaTask, "Desliga Tela", 2048, NULL, 5, NULL);  
   }
   else {
     gpio_set_level(LED_GPIO_PIN, 0);
+    ligado = false;
+    systemON = 0;
+    snprintf(json_message, sizeof(json_message), "{\"led_sys_on\": %d}", systemON);
+    mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
   }
 }
 
 void touchTask(void *pvParameters) {
     touch_pad_intr_enable();
-    char json_message[100];
-    bool ligado = false;
     while (1) {
-      if(systemON && !ligado) {
-        printf("on");
-        controleLuzEsp(true);
-        snprintf(json_message, sizeof(json_message), "{\"led_sys_on\": %d}", systemON);
-        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
-        ligado = 1;
-      }
-      else if (!systemON && ligado) {
-        printf("of");
-        controleLuzEsp(false);
-        snprintf(json_message, sizeof(json_message), "{\"led_sys_on\": %d}", systemON);
-        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
-        ligado = 0;
-      } 
-
+      if(systemON && !ligado) controleLuzEsp(true);
+      else if (!systemON && ligado) controleLuzEsp(false);
+ 
       uint32_t pad_status = touch_pad_get_status();
       if (pad_status & (1 << TOUCH_PAD_NUM0)) {
-          controleLuzEsp(true);
+          controleLuzEsp(!systemON);
+
           touch_pad_clear_status();
           
           // Desabilita temporariamente a detecção de toque
