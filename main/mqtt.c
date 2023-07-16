@@ -29,18 +29,15 @@ esp_mqtt_client_handle_t client;
 
 int systemON = 0;
 
-static void log_error_if_nonzero(const char *message, int error_code)
-{
+static void log_error_if_nonzero(const char *message, int error_code) {
     if (error_code != 0) {
         ESP_LOGE(TAG, "Last error %s: 0x%x", message, error_code);
     }
 }
 
-void parse_event_data(char *data)
-{   
+void parse_event_data(char *data) {   
     char json_message[100];
-    switch (json_parse_return_comm(data))
-    {
+    switch (json_parse_return_comm(data)) {
      case TURN_SYSTEM:
         if (systemON == 0) {
             ESP_LOGI(TAG, "Turn on System");
@@ -49,8 +46,6 @@ void parse_event_data(char *data)
             ESP_LOGI(TAG, "Turn off System");
             systemON = 0;
         }
-        snprintf(json_message, sizeof(json_message), "{\"led_sys_on\": %d}", systemON);
-        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
         break;
     case GREEN:
         mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
@@ -70,8 +65,7 @@ void parse_event_data(char *data)
     }
 }
 
-static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
-{
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, (int) event_id);
     esp_mqtt_event_handle_t event = event_data;
     esp_mqtt_client_handle_t client = event->client;
@@ -117,8 +111,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
-void mqtt_start()
-{
+void mqtt_start() {
     esp_mqtt_client_config_t mqtt_config = {
         .broker.address.uri = "mqtt://164.41.98.25",
         .credentials.username = "SU6LjX84paNYZPKyWeij"
@@ -128,8 +121,7 @@ void mqtt_start()
     esp_mqtt_client_start(client);
 }
 
-void mqtt_envia_mensagem(char * topico, char * mensagem)
-{
+void mqtt_envia_mensagem(char * topico, char * mensagem) {
     int message_id = esp_mqtt_client_publish(client, topico, mensagem, 0, 1, 0);
     ESP_LOGI(TAG, "Mensagem enviada, ID: %d", message_id);
 }

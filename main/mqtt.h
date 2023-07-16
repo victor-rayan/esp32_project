@@ -6,6 +6,8 @@
 
 void mqtt_start();
 
+extern int systemON;
+
 
 void mqtt_envia_mensagem(char * topico, char * mensagem);
 
