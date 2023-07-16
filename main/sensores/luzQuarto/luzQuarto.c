@@ -24,8 +24,7 @@
 #define LEDC_FREQ_HZ       5000
 #define LEDC_RESOLUTION    LEDC_TIMER_8_BIT
 
-void ledConfig()
-{
+void ledConfig() {
   esp_rom_gpio_pad_select_gpio(LED_RED_GPIO_PIN);
   esp_rom_gpio_pad_select_gpio(LED_GREEN_GPIO_PIN);
   esp_rom_gpio_pad_select_gpio(LED_BLUE_GPIO_PIN);
@@ -61,8 +60,7 @@ void ledConfig()
   ledc_fade_func_install(0);
 }
 
-void setRGB(uint8_t r, uint8_t g, uint8_t b)
-{
+void setRGB(uint8_t r, uint8_t g, uint8_t b) {
     ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_RED, r);
     ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_GREEN, g);
     ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_BLUE, b);
@@ -71,20 +69,16 @@ void setRGB(uint8_t r, uint8_t g, uint8_t b)
     ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_BLUE);
 }
 
-void ligaBotao()
-{
+void ligaBotao() {
     esp_rom_gpio_pad_select_gpio(BOTAO_GPIO_PIN);
     gpio_set_direction(BOTAO_GPIO_PIN, GPIO_MODE_INPUT);
 
     bool botaoPressionado = false;
     int cont = 0;
 
-    while (true)
-    {
-      if (gpio_get_level(BOTAO_GPIO_PIN) == 0)
-      {
-        if (!botaoPressionado)
-        {      
+    while (true) {
+      if (gpio_get_level(BOTAO_GPIO_PIN) == 0) {
+        if (!botaoPressionado) {      
           printf("cor led: %d", corLed);
           botaoPressionado = true;
           if (corLed == RED)
@@ -105,8 +99,7 @@ void ligaBotao()
             setRGB(35,142,35); // Verde Floresta
         }
       }
-      else
-      {
+      else {
         botaoPressionado = false;
       }
       vTaskDelay(pdMS_TO_TICKS(10));  
