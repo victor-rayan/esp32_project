@@ -19,6 +19,7 @@
 #include "mqtt_client.h"
 
 #include "json_parser.h"
+#include "luzQuarto.h"
 
 #include "mqtt.h"
 
@@ -38,7 +39,7 @@ static void log_error_if_nonzero(const char *message, int error_code) {
 void parse_event_data(char *data) {   
     char json_message[100];
     switch (json_parse_return_comm(data)) {
-     case TURN_SYSTEM:
+    case TURN_SYSTEM:
         if (systemON == 0) {
             ESP_LOGI(TAG, "Turn on System");
             systemON = 1;
@@ -46,6 +47,12 @@ void parse_event_data(char *data) {
             ESP_LOGI(TAG, "Turn off System");
             systemON = 0;
         }
+        break;
+    case TURN_ON_LIGHT:
+        setaCor();
+        break;
+    case TURN_OFF_LIGHT:
+        setRGB(0,0,0);
         break;
     case GREEN:
         mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");

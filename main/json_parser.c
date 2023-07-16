@@ -68,6 +68,18 @@ int json_parse_return_comm(const char *const json)
     return TURN_SYSTEM;
   }
 
+  if (strstr(json, "true"))
+  {
+    printf("LIGHT");
+    return TURN_ON_LIGHT;
+  }
+
+  if (strstr(json, "false"))
+  {
+    printf("LIGHT");
+    return TURN_OFF_LIGHT;
+  }
+
 
 
   return -1;

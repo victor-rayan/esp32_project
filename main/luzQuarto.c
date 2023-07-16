@@ -24,8 +24,7 @@
 #define LEDC_FREQ_HZ       5000
 #define LEDC_RESOLUTION    LEDC_TIMER_8_BIT
 
-void ledConfig()
-{
+void ledConfig() {
   esp_rom_gpio_pad_select_gpio(LED_RED_GPIO_PIN);
   esp_rom_gpio_pad_select_gpio(LED_GREEN_GPIO_PIN);
   esp_rom_gpio_pad_select_gpio(LED_BLUE_GPIO_PIN);
@@ -61,54 +60,64 @@ void ledConfig()
   ledc_fade_func_install(0);
 }
 
-void setRGB(uint8_t r, uint8_t g, uint8_t b)
-{
-    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_RED, r);
-    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_GREEN, g);
-    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_BLUE, b);
-    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_RED);
-    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_GREEN);
-    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_BLUE);
+void setRGB(uint8_t r, uint8_t g, uint8_t b) {
+  ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_RED, r);
+  ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_GREEN, g);
+  ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_BLUE, b);
+  ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_RED);
+  ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_GREEN);
+  ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_BLUE);
 }
 
-void ligaBotao()
-{
-    esp_rom_gpio_pad_select_gpio(BOTAO_GPIO_PIN);
-    gpio_set_direction(BOTAO_GPIO_PIN, GPIO_MODE_INPUT);
+void setaCor() {
+  switch(corLed) {
+    case RED:
+      setRGB(255, 0, 0); // Vermelho
+      break;
+    case BLUE:
+      setRGB(0, 0, 255); // Azul
+      break;
+    case GREEN:
+      setRGB(0, 255, 0); // Verde
+      break;
+    case YELLOW:
+      setRGB(255, 255, 0); // Amarelo
+      break;
+    case MAGENTA:
+      setRGB(255, 0, 255); // Magenta
+      break;
+    case CHOCOLATE:
+      setRGB(92, 51, 23); // Baker's Chocolate
+      break;
+    case ARDOSIA:
+      setRGB(107, 35, 142); // Azul Ardósia Escuro
+      break;
+    case FLORESTA:
+      setRGB(35, 142, 35); // Verde Floresta
+      break;
+    default:
+      setRGB(0, 0, 0);
+      break;
+  }
+}
 
-    bool botaoPressionado = false;
-    int cont = 0;
+void ligaBotao() {
+  bool botaoPressionado = false;
+  
+  esp_rom_gpio_pad_select_gpio(BOTAO_GPIO_PIN);
+  gpio_set_direction(BOTAO_GPIO_PIN, GPIO_MODE_INPUT);
 
-    while (true)
-    {
-      if (gpio_get_level(BOTAO_GPIO_PIN) == 0)
-      {
-        if (!botaoPressionado)
-        {      
-          printf("cor led: %d", corLed);
-          botaoPressionado = true;
-          if (corLed == RED)
-            setRGB(255,0,0); // Vermelho
-          if (corLed == BLUE)
-            setRGB(0,0,255); // Azul
-          if (corLed == GREEN)
-            setRGB(0,255,0); // Verde
-          if (corLed == YELLOW)
-            setRGB(255,255,0); // Amarelo
-          if (corLed == MAGENTA)
-            setRGB(255,0,255); // Magenta
-          if (corLed == CHOCOLATE)
-            setRGB(92,51,23); // Baker's Chocolate
-          if (corLed == ARDOSIA)
-            setRGB(107,35,142); // Azul Ardósia Escuro
-          if (corLed == FLORESTA)
-            setRGB(35,142,35); // Verde Floresta
-        }
+  while (true) {
+    if (gpio_get_level(BOTAO_GPIO_PIN) == 0) {
+      if (!botaoPressionado) {      
+        botaoPressionado = true;
+        setaCor();
       }
-      else
-      {
-        botaoPressionado = false;
-      }
-      vTaskDelay(pdMS_TO_TICKS(10));  
     }
+    else
+    {
+      botaoPressionado = false;
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));  
+  }
 }
