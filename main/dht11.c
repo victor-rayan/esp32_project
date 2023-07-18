@@ -125,3 +125,18 @@ struct dht11_reading DHT11_read() {
     }
 }
 
+void DHT11_task() {
+    
+    DHT11_init(GPIO_NUM_5);
+
+    while(1) {
+        if(DHT11_read().status == 0) {
+            printf("Temperature is %d \n", DHT11_read().temperature);
+            printf("Humidity is %d\n", DHT11_read().humidity);
+        }
+    
+        vTaskDelay(pdMS_TO_TICKS(2000));
+    }
+}
+
+

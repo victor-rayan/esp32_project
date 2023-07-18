@@ -76,13 +76,5 @@ void app_main(void) {
     xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
     initTouch();
     xTaskCreate(&touchTask, "touchTask", 2048, NULL, 5, NULL);
-
-    DHT11_init(GPIO_NUM_5);
-
-    while(1) {
-        printf("Temperature is %d \n", DHT11_read().temperature);
-        printf("Humidity is %d\n", DHT11_read().humidity);
-        printf("Status code is %d\n", DHT11_read().status);
-        vTaskDelay(pdMS_TO_TICKS(2000));
-    }
+    xTaskCreate(&DHT11_task, "DHTTask", 2048, NULL, 1, NULL);
 }
