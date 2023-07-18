@@ -21,58 +21,68 @@
 #include "wifi.h"
 #include "mqtt.h"
 #include "ligaTela.h"
+#include "rotary_encoder.h"
+#include <stdio.h>
+#include "rotary_encoder.h"
 
-SemaphoreHandle_t conexaoWifiSemaphore;
-SemaphoreHandle_t conexaoMQTTSemaphore;
+#define ROT_ENC_A_GPIO 25 // Pino GPIO para sinal A do encoder
+#define ROT_ENC_B_GPIO 27 // Pino GPIO para sinal B do encoder
+#define ENABLE_HALF_STEPS true // Ativar meio passo (opcional, conforme necessário)
+#define MAX_TEMPERATURE 100 // Temperatura máxima permitida (exemplo)
 
-void conectadoWifi(void * params)
-{
-  while(true)
-  {
-    if(xSemaphoreTake(conexaoWifiSemaphore, portMAX_DELAY))
-    {
-      // Processamento Internet
-      mqtt_start();
-    }
-  }
-}
+// Variáveis globais para armazenar informações do encoder
+// Definir função MAX para obter o valor máximo entre dois números
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-void trataComunicacaoComServidor(void * params)
-{
-  char mensagem[50];
-  
-  if(xSemaphoreTake(conexaoMQTTSemaphore, portMAX_DELAY))
-  {
-    while(true)
-    {
-       float temperatura = 20.0 + (float)rand()/(float)(RAND_MAX/10.0);
-       sprintf(mensagem, "{\"potencia\": 22}");
-       mqtt_envia_mensagem("v1/devices/me/telemetry", mensagem);
+rotary_encoder_info_t info;
+int32_t rotaryPosition;
+int32_t referenceTemperature;
 
-       vTaskDelay(3000 / portTICK_PERIOD_MS);
-    }
-  }
+// Definir função MAX para obter o valor máximo entre dois números
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
+// Função para ajustar a temperatura do sistema com base na referência
+void adjustTemperature() {
+    // Implemente aqui o código para ajustar o sistema de acordo com a referenceTemperature.
+    // Por exemplo, ligue ou desligue um sistema de aquecimento/resfriamento, ajuste a velocidade do ventilador, etc.
+    printf("Ajustando a temperatura para: %ld\n", referenceTemperature);
 }
 
 void app_main(void) {
-    
-    // Inicializa o NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
+    // esp32-rotary-encoder requer que o serviço de ISR do GPIO seja instalado antes de chamar rotary_encoder_register()
+    ESP_ERROR_CHECK(gpio_install_isr_service(0));
+
+    // Inicializa o dispositivo encoder rotativo com os pinos GPIO para os sinais A e B
+    ESP_ERROR_CHECK(rotary_encoder_init(&info, ROT_ENC_A_GPIO, ROT_ENC_B_GPIO));
+    ESP_ERROR_CHECK(rotary_encoder_enable_half_steps(&info, ENABLE_HALF_STEPS));
+
+    // Cria uma fila para eventos do driver do encoder rotativo.
+    // Tarefas podem ler desta fila para receber informações de posição atualizadas.
+    QueueHandle_t event_queue = xQueueCreate(10, sizeof(rotary_encoder_event_t));
+    info.state.position = 0;
+    rotaryPosition = info.state.position;
+    referenceTemperature = rotaryPosition * 5; // Cada clique do encoder ajusta a temperatura em 5 graus
+    printf("Posição inicial: %ld\n", rotaryPosition);
+    ESP_ERROR_CHECK(rotary_encoder_set_queue(&info, (QueueHandle_t)event_queue));
+
+    // Loop principal
+    while (1) {
+        // Aguarde um evento da fila do encoder rotativo
+        rotary_encoder_event_t event;
+        if (xQueueReceive(event_queue, &event, portMAX_DELAY) == pdTRUE) {
+            // Evento recebido, atualize a posição do encoder e a temperatura de referência
+            rotaryPosition += event.position;
+            rotaryPosition = MAX(0, rotaryPosition); // Garante que a posição não seja negativa
+            referenceTemperature = rotaryPosition * 5; // Cada clique do encoder ajusta a temperatura em 5 graus
+
+            // Verifique os limites da temperatura
+            if (referenceTemperature > MAX_TEMPERATURE) {
+                referenceTemperature = MAX_TEMPERATURE;
+            }
+
+            // Atualiza o sistema para a nova temperatura de referência
+            adjustTemperature();
+            printf("Nova posição: %ld, Temperatura de referência: %ld\n", rotaryPosition, referenceTemperature);
+        }
     }
-    ESP_ERROR_CHECK(ret);
-
-    conexaoWifiSemaphore = xSemaphoreCreateBinary();
-    conexaoMQTTSemaphore = xSemaphoreCreateBinary();
-    wifi_start();
-    ledConfig();
-    
-
-    xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
-    xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
-    xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
-    initTouch();
-    xTaskCreate(&touchTask, "touchTask", 2048, NULL, 5, NULL);
 }
