@@ -125,7 +125,7 @@ struct dht11_reading DHT11_read() {
     }
 }
 
-void DHT11_task() {
+void DHT11Task() {
     
     DHT11_init(GPIO_NUM_5);
 

@@ -76,5 +76,5 @@ void app_main(void) {
     xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
     initTouch();
     xTaskCreate(&touchTask, "touchTask", 2048, NULL, 5, NULL);
-    xTaskCreate(&DHT11_task, "DHTTask", 2048, NULL, 1, NULL);
+    xTaskCreate(&DHT11Task, "DHTTask", 2048, NULL, 1, NULL);
 }
