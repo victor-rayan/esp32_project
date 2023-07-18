@@ -6,6 +6,7 @@ idf_component_register(
     "./sensores/luzQuarto/luzQuarto.c"
     "./sensores/ligaTela/ligaTela.c"
     "./mqtt/json_parser.c"
+    "dht11.c"
                     
     INCLUDE_DIRS 
     "."
