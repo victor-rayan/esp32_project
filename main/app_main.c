@@ -18,10 +18,11 @@
 #include "luzQuarto.h"
 #include "driver/touch_pad.h"
 #include "bpm_sensor.h"
-
 #include "wifi.h"
 #include "mqtt.h"
 #include "ligaTela.h"
+#include "sdkconfig.h"
+#include "dht11.h"
 #include "ports.h"
 
 int heartbeat = 0;
@@ -67,6 +68,25 @@ void initHeartbeatRoutine(void * params)
 
 void app_main(void) {
     
-   
+    // Inicializa o NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+      ESP_ERROR_CHECK(nvs_flash_erase());
+      ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    conexaoWifiSemaphore = xSemaphoreCreateBinary();
+    conexaoMQTTSemaphore = xSemaphoreCreateBinary();
+    wifi_start();
+    ledConfig();
+    
+
+    xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
+    xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
+    xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
+    initTouch();
+    xTaskCreate(&touchTask, "touchTask", 2048, NULL, 5, NULL);
+    xTaskCreate(&DHT11Task, "DHTTask", 2048, NULL, 1, NULL);
     xTaskCreate(&initHeartbeatRoutine, "Monitoramento BPM", 8192, NULL, 1, NULL);
 }

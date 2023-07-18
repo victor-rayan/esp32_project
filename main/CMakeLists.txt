@@ -1,15 +1,21 @@
 idf_component_register(
     SRCS 
-    "wifi.c" 
-    "mqtt.c" 
     "adc_module.c"
-    "luzQuarto.c"
-    "ligaTela.c"
     "bpm_sensor.c"
     "gpio_setup.c"
+    "./mqtt/mqtt.c"
+    "./wifi/wifi.c"
     "app_main.c"
-
+    "./sensores/luzQuarto/luzQuarto.c"
+    "./sensores/ligaTela/ligaTela.c"
+    "./mqtt/json_parser.c"
+    "./sensores/dht11/dht11.c"
                     
     INCLUDE_DIRS 
     "."
+    "./mqtt/"
+    "./wifi/"
+    "./sensores/ligaTela/"
+    "./sensores/luzQuarto/"
+    "./sensores/dht11/"
 )
