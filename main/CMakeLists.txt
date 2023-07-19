@@ -7,6 +7,9 @@ idf_component_register(
     "./sensores/ligaTela/ligaTela.c"
     "./mqtt/json_parser.c"
     "./sensores/dht11/dht11.c"
+    "./sensores/encoder/rotary_encoder.c"
+    "./sensores/ky039/ky039.c"
+    "./sensores/ky039/adc_module.c"
                     
     INCLUDE_DIRS 
     "."
@@ -15,4 +18,6 @@ idf_component_register(
     "./sensores/ligaTela/"
     "./sensores/luzQuarto/"
     "./sensores/dht11/"
+    "./sensores/encoder/"
+    "./sensores/ky039/"
 )
