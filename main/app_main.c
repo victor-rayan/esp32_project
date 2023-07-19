@@ -23,11 +23,12 @@
 #include "sdkconfig.h"
 #include "dht11.h"
 #include "rotary_encoder.h"
+#include "ky039.h"
 
 SemaphoreHandle_t conexaoWifiSemaphore;
 SemaphoreHandle_t conexaoMQTTSemaphore;
 
-
+int heartbeat = 0;
 
 void conectadoWifi(void * params)
 {
@@ -58,6 +59,7 @@ void trataComunicacaoComServidor(void * params)
   }
 }
 
+
 void app_main(void) {
     
     // Inicializa o NVS
@@ -76,9 +78,10 @@ void app_main(void) {
 
     xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
     xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
-    // xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
-    // initTouch();
-    // xTaskCreate(&touchTask, "touchTask", 2048, NULL, 5, NULL);
-    // xTaskCreate(&DHT11Task, "DHTTask", 2048, NULL, 1, NULL);
-    xTaskCreate(&encoder_task, "encoderTask", 2048, NULL, 1, NULL);
+    xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
+    initTouch();
+    xTaskCreate(&touchTask, "touchTask", 2048, NULL, 5, NULL);
+    xTaskCreate(&DHT11Task, "DHTTask", 2048, NULL, 1, NULL);
+    xTaskCreate(&encoder_task, "encoderTask", 4096, NULL, 1, NULL);
+    xTaskCreate(&initHeartbeatRoutine, "Monitoramento BPM", 8192, NULL, 1, NULL);
 }

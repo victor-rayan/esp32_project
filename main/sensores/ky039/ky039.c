@@ -5,6 +5,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <esp_timer.h>
+#include "mqtt.h"
 
 
 float readings[SAMP_SIZE], first, second, third;
@@ -69,7 +70,10 @@ void monitorBPM()
           {
               int bpm = quantidadeBatidas * 4;
               if (valorLido > limiarSensorTocado){
-                    printf("batidas: %d\n", bpm);
+                    char send_bpm[50];
+                    printf("bpms: %d\n", bpm);
+                    sprintf(send_bpm, "{\"bpm\": %d}", bpm);
+                    mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, send_bpm);
                 }  
               tempoBPM = esp_timer_get_time() / 1000;
               quantidadeBatidas = 0;
@@ -78,4 +82,10 @@ void monitorBPM()
           vTaskDelay(50 / portTICK_PERIOD_MS);
         
     }
+}
+
+void initHeartbeatRoutine(void * params)
+{
+  setup(HEARTBEAT_SENSOR);
+  monitorBPM();
 }
