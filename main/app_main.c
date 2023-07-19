@@ -17,10 +17,11 @@
 #include "driver/rtc_io.h"
 #include "luzQuarto.h"
 #include "driver/touch_pad.h"
-
 #include "wifi.h"
 #include "mqtt.h"
 #include "ligaTela.h"
+#include "sdkconfig.h"
+#include "dht11.h"
 
 SemaphoreHandle_t conexaoWifiSemaphore;
 SemaphoreHandle_t conexaoMQTTSemaphore;
@@ -75,4 +76,5 @@ void app_main(void) {
     xTaskCreate(&ligaBotao, "Liga Botao", 4096, NULL, 1, NULL);
     initTouch();
     xTaskCreate(&touchTask, "touchTask", 2048, NULL, 5, NULL);
+    xTaskCreate(&DHT11Task, "DHTTask", 2048, NULL, 1, NULL);
 }
