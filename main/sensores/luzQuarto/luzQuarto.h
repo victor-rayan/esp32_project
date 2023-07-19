@@ -5,6 +5,7 @@
 
 void ledConfig();
 void setRGB(uint8_t r, uint8_t g, uint8_t b);
+void setaCor();
 void ligaBotao();
 
 #endif

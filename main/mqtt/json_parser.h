@@ -12,6 +12,8 @@ extern int corLed;
 #define MAGENTA 9
 #define FLORESTA 10
 #define CHOCOLATE 11
+#define TURN_ON_LIGHT 12
+#define TURN_OFF_LIGHT 13
 
 int json_parse_return_comm(const char * const json);
 

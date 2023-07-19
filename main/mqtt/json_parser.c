@@ -12,51 +12,42 @@ int json_parse_return_comm(const char *const json) {
   if (strstr(json, "azul")) {
     corLed = BLUE;
     return BLUE;
-  }
-
-  if (strstr(json, "verde")) {
+  } else if (strstr(json, "verde")) {
     corLed = GREEN;
     return GREEN;
-  }
-
-  if (strstr(json, "vermelho")) {
+  } else if (strstr(json, "vermelho")) {
     corLed = RED;
     return RED;
-  }
-
-  if (strstr(json, "amarelo")) {
+  } else if (strstr(json, "amarelo")) {
     corLed = YELLOW;
     return YELLOW;
-  }
-
-  if (strstr(json, "ardosia")) {
+  } else if (strstr(json, "ardosia")) {
     corLed = ARDOSIA;
     printf("ardosia");
     return ARDOSIA;
-  }
-
-  if (strstr(json, "magenta")) {
+  } else if (strstr(json, "magenta")) {
     corLed = MAGENTA;
     printf("magenta");
     return MAGENTA;
-  }
-
-  if (strstr(json, "floresta")) {
-    printf("floresta");
+  } else if (strstr(json, "floresta")) {
+    printf("floresta %s", json);
     corLed = FLORESTA;
     return FLORESTA;
-  }
-
-  if (strstr(json, "chocolate")) {
+  } else if (strstr(json, "chocolate")) {
     corLed = CHOCOLATE;
     printf("chocolate");
     return CHOCOLATE;
-  }
-
-  if (strstr(json, "on")) {
-    printf("ligar/desligar");
+  } else if (strstr(json, "light")) {
+    printf("LIGHT on");
+    return TURN_ON_LIGHT;
+  } else if (strstr(json, "off")) {
+    printf("LIGHT of");
+    return TURN_OFF_LIGHT;
+  } else if (strstr(json, "on")) {
+    printf("ligar/desligar %s", json);
     return TURN_SYSTEM;
-  }
+  } 
+
 
   return -1;
 }
