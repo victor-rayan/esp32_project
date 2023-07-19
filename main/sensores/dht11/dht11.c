@@ -27,6 +27,7 @@
 #include "rom/ets_sys.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "mqtt.h"
 
 #include "dht11.h"
 
@@ -128,11 +129,17 @@ struct dht11_reading DHT11_read() {
 void DHT11Task() {
     
     DHT11_init(GPIO_NUM_5);
+    char temperature[50];
+    char humidity[50];
 
     while(1) {
         if(DHT11_read().status == 0) {
             printf("Temperature is %d \n", DHT11_read().temperature);
             printf("Humidity is %d\n", DHT11_read().humidity);
+            sprintf(temperature, "{\"temp\": %d}", DHT11_read().temperature);
+            sprintf(humidity, "{\"umidade\": %d}", DHT11_read().humidity);
+            mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, temperature);
+            mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, humidity);
         }
     
         vTaskDelay(pdMS_TO_TICKS(2000));
