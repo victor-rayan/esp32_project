@@ -91,6 +91,9 @@
 
 #include "esp_log.h"
 #include "driver/gpio.h"
+#include "json_parser.h"
+#include "mqtt.h"
+#include "luzQuarto.h"
 
 #define TAG "rotary_encoder"
 
@@ -346,11 +349,54 @@ esp_err_t rotary_encoder_reset(rotary_encoder_info_t *info)
 
 
 // Lista de números
-int numeros[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+int numeros[] = {GREEN , RED, BLUE, YELLOW, ARDOSIA, MAGENTA, FLORESTA, CHOCOLATE};
 int num_numeros = sizeof(numeros) / sizeof(numeros[0]);
 
 // Variável para armazenar a posição atual
 int posicao_atual = 0;
+
+void selectColor() {
+    char json_message[100];
+    switch(numeros[posicao_atual]) {
+        case RED:
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Vermelho");
+            corLed = RED;
+            break;
+        case BLUE:
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Azul");
+            corLed = BLUE;
+            break;
+        case GREEN:
+            corLed = GREEN;
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Verde");
+            break;
+        case YELLOW:
+            corLed = YELLOW;    
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Amarelo");
+            break;
+        case MAGENTA:
+            corLed = MAGENTA;
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Magenta");
+            break;
+        case CHOCOLATE:
+            corLed = CHOCOLATE; 
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Chocolate");
+            break;
+        case ARDOSIA:
+            corLed = ARDOSIA;
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Ardosia");
+            break;        
+        case FLORESTA:
+            corLed = FLORESTA;
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "FLoresta");
+            break;
+        default:
+            corLed = 0;
+            snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Apagado");
+          break;
+    }
+    mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+}
 
 // Funções de ação quando girar para a direita e para a esquerda
 void onEncoderRotateRight() {
@@ -358,6 +404,8 @@ void onEncoderRotateRight() {
     if (posicao_atual >= num_numeros) {
         posicao_atual = 0;
     }
+    selectColor();
+    
     printf("Girou para a direita! Número correspondente: %d\n", numeros[posicao_atual]);
 }
 
@@ -366,6 +414,7 @@ void onEncoderRotateLeft() {
     if (posicao_atual < 0) {
         posicao_atual = num_numeros - 1;
     }
+    selectColor();
     printf("Girou para a esquerda! Número correspondente: %d\n", numeros[posicao_atual]);
 }
 

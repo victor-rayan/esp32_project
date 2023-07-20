@@ -171,8 +171,8 @@ extern "C"
 
 #endif // ROTARY_ENCODER_H
 
-#define ROT_ENC_A_GPIO 14
-#define ROT_ENC_B_GPIO 15
+#define ROT_ENC_A_GPIO 27
+#define ROT_ENC_B_GPIO 14
 
 #define ENABLE_HALF_STEPS false  // Set to true to enable tracking of rotary encoder at half step resolution
 #define RESET_AT          0      // Set to a positive non-zero number to reset the position if this value is exceeded

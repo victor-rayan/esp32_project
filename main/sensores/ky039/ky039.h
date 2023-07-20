@@ -13,6 +13,6 @@ void setup(int channel);
 void monitorBPM();
 void initHeartbeatRoutine(void * params);
 
-#define HEARTBEAT_SENSOR ADC_CHANNEL_5
+#define HEARTBEAT_SENSOR ADC_CHANNEL_0
 
 #endif
