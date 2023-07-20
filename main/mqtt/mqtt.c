@@ -55,18 +55,45 @@ void parse_event_data(char *data) {
         setRGB(0,0,0);
         break;
     case GREEN:
-        mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
+        snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Verde");
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        corLed = GREEN;
         break;
     case BLUE:
-        mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
+        snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Azul");
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        corLed = BLUE;
         break;
     case RED:
-        mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
+        snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Vermelho");
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        corLed = RED;
         break;
     case YELLOW:
-        mqtt_envia_mensagem(MQTT_TELEMETRY_PATH, "{\"key1\": 0}");
+        snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Amarelo");
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        corLed = YELLOW;
+        break; 
+    case ARDOSIA:
+        snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Ardosia");
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        corLed = ARDOSIA;
         break;
-
+    case MAGENTA:   
+        snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Magenta");
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        corLed = MAGENTA;
+        break;
+    case FLORESTA:
+        snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Floresta");
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        corLed = FLORESTA;
+        break;
+    case CHOCOLATE:
+        snprintf(json_message, sizeof(json_message), "{\"cor\": %s}", "Chocolate");
+        mqtt_envia_mensagem(MQTT_ATTRIBUTES_PATH, json_message);
+        corLed = CHOCOLATE;
+        break;
     default:
         break;
     }

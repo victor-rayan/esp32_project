@@ -103,6 +103,7 @@ void setaCor() {
 
 void ligaBotao() {
   bool botaoPressionado = false;
+  bool ligado = false;
   
   esp_rom_gpio_pad_select_gpio(BOTAO_GPIO_PIN);
   gpio_set_direction(BOTAO_GPIO_PIN, GPIO_MODE_INPUT);
@@ -111,7 +112,14 @@ void ligaBotao() {
     if (gpio_get_level(BOTAO_GPIO_PIN) == 0) {
       if (!botaoPressionado) {      
         botaoPressionado = true;
-        setaCor();
+        if (ligado) {
+          ligado = false;
+          setRGB(0, 0, 0);
+        }
+        else {
+          ligado = true;
+          setaCor();
+        }
       }
     }
     else
