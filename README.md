@@ -80,20 +80,29 @@ No código-fonte do projeto, localize a parte responsável pelo envio dos dados 
 Essa é a tela de visualização principal do dashboard, ela contém as informações sobre a luz do quarto, e informações dos sensores em tempo real.
 
 - Temperatura e Umidade
+  
 ![Temperatura e Umidade](./assets/temperatura.png)
+
 Na tela do dashboard temos os sensores de temperatura e umidade, que são atualizadas em tempo real através dos dados medidos do sensor `DHT11`.
 
-- Batimentos cardíacos 
-![Batimentos](./assets/cardiaco.png)
-Na tela do dashboard temos também as informações do sensor de batimento cardíaco que é atualizado automaticamente através do sensor `KY-039` quando ele detecta o dedo no sensor.
-<br></br>
-![bpm](./assets/bpm.png)
-<br></br>No dashboard também podemos ver a última leitura feita do sensor de batimentos cardiacos.
+- Batimentos cardíacos
 
-- Touch sensor 
+![Batimentos](./assets/cardiaco.png)
+
+Na tela do dashboard temos também as informações do sensor de batimento cardíaco que é atualizado automaticamente através do sensor `KY-039` quando ele detecta o dedo no sensor.
+
+![bpm](./assets/bpm.png)
+
+No dashboard também podemos ver a última leitura feita do sensor de batimentos cardiacos.
+
+- Touch sensor
+  
 ![Touch](./assets/touch.png)
+
 O Dashboard também tem a função de ligar a esp ou através do `touch sensor` da esp mostrar o sinal de ligado no dashboard.
 
 - Luz do quarto
+  
 ![Luz do quarto](./assets/luz_do_quarto.png)
+
 A luz do quarto pode ser escolhida através do dashboard ou setada através do encoder `KY-040`, o switch tem a função de ligar ou desligar a luz.
