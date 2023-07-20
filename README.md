@@ -1,61 +1,74 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- |
+# Trabalho Final - FSE
 
-# ESP-MQTT sample application
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+UnB - Universidade de Brasilia  
+FGA - Faculdade do Gama  
+ 
+## Grupo:
+|Aluno  |  Matricula |
+| --------- | ------------------------------------------------------ |
+|Paulo Vitor Abi CL | 190047968     | 
+|Mateus Moreira Lima | 180024868      | 
+|Victor Rayan Adriano Ferreira| 190044390 |
 
-This example connects to the broker URI selected using `idf.py menuconfig` (using mqtt tcp transport) and as a demonstration subscribes/unsubscribes and send a message on certain topic.
-(Please note that the public broker is maintained by the community so may not be always available, for details please see this [disclaimer](https://iot.eclipse.org/getting-started/#sandboxes))
+## Projeto
 
-Note: If the URI equals `FROM_STDIN` then the broker address is read from stdin upon application startup (used for testing)
+Pulseira de Auxílio "HelpBand" - Implementação de 6 Sensores para ESP32 IDF
 
-It uses ESP-MQTT library which implements mqtt client to connect to mqtt broker.
+A "HelpBand" é uma pulseira de auxílio desenvolvida como parte de um projeto de sistemas embarcados. A ideia por trás dessa pulseira é fornecer assistência e monitoramento a pessoas que necessitam de cuidados especiais, como idosos ou pessoas com necessidades médicas específicas. Além disso, ela te ajuda a automatizar tarefas como acender a Lâmpada e trocar a cor.
 
-## How to use example
+Através da integração de 6 diferentes sensores (KY-40, KY-39, touch, RGB, botão da ESP e DHT11) em uma placa ESP32 IDF, a pulseira "HelpBand" será capaz de coletar informações vitais, detectar situações de emergência e fornecer telemetria em tempo real para cuidadores ou profissionais de saúde, utilizando o dashboard do ThingsBoard para monitoramento e visualização dos dados.
 
-### Hardware Required
+## Sensores Utilizados
 
-This example can be executed on any ESP32 board, the only required interface is WiFi and connection to internet.
+KY-40 (Encoder Rotativo): Mede a rotação de um eixo através de sinais pulsantes, permitindo determinar a direção e velocidade do movimento.
 
-### Configure the project
+Touch (Sensor de Toque): Detecta toques ou interações táteis em uma superfície específica.
 
-* Open the project configuration menu (`idf.py menuconfig`)
-* Configure Wi-Fi or Ethernet under "Example Connection Configuration" menu. See "Establishing Wi-Fi or Ethernet Connection" section in [examples/protocols/README.md](../../README.md) for more details.
+RGB (Sensor de Cores RGB): Emite luz nas cores vermelha, verde e azul, permitindo criar diversas tonalidades de cores.
 
-### Build and Flash
+Botão da ESP: Botão físico presente na placa ESP32, utilizado para interação do usuário com o sistema.
 
-Build the project and flash it to the board, then run monitor tool to view serial output:
+DHT11 (Sensor de Temperatura e Umidade): Mede a temperatura e umidade relativa do ar para monitoramento ambiental.
 
-```
-idf.py -p PORT flash monitor
-```
+Sensor Cardíaco (KY-039): Mede o ritmo cardíaco de uma pessoa, geralmente através do pulso, fornecendo informações sobre a frequência cardíaca.
 
-(To exit the serial monitor, type ``Ctrl-]``.)
+Sensor de Inclinação (Tilt Test Sensor): Detecta inclinação ou mudanças de posição em uma determinada direção, podendo ser utilizado para testes de inclinação e detecção de movimentos.
 
-See the Getting Started Guide for full steps to configure and use ESP-IDF to build projects.
+Pré-requisitos
+Antes de buildar o projeto, certifique-se de ter instalado o ESP-IDF (Internet of Things Development Framework) em seu ambiente de desenvolvimento.
 
-## Example Output
+## Como Buildar o Projeto
 
-```
-I (3714) event: sta ip: 192.168.0.139, mask: 255.255.255.0, gw: 192.168.0.2
-I (3714) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
-I (3964) MQTT_CLIENT: Sending MQTT CONNECT message, type: 1, id: 0000
-I (4164) MQTT_EXAMPLE: MQTT_EVENT_CONNECTED
-I (4174) MQTT_EXAMPLE: sent publish successful, msg_id=41464
-I (4174) MQTT_EXAMPLE: sent subscribe successful, msg_id=17886
-I (4174) MQTT_EXAMPLE: sent subscribe successful, msg_id=42970
-I (4184) MQTT_EXAMPLE: sent unsubscribe successful, msg_id=50241
-I (4314) MQTT_EXAMPLE: MQTT_EVENT_PUBLISHED, msg_id=41464
-I (4484) MQTT_EXAMPLE: MQTT_EVENT_SUBSCRIBED, msg_id=17886
-I (4484) MQTT_EXAMPLE: sent publish successful, msg_id=0
-I (4684) MQTT_EXAMPLE: MQTT_EVENT_SUBSCRIBED, msg_id=42970
-I (4684) MQTT_EXAMPLE: sent publish successful, msg_id=0
-I (4884) MQTT_CLIENT: deliver_publish, message_length_read=19, message_length=19
-I (4884) MQTT_EXAMPLE: MQTT_EVENT_DATA
-TOPIC=/topic/qos0
-DATA=data
-I (5194) MQTT_CLIENT: deliver_publish, message_length_read=19, message_length=19
-I (5194) MQTT_EXAMPLE: MQTT_EVENT_DATA
-TOPIC=/topic/qos0
-DATA=data
-```
+Clone este repositório para o seu ambiente de desenvolvimento.
+
+git clone https://github.com/seu-usuario/nome-do-repositorio.git
+
+cd nome-do-repositorio
+
+idf.py set-target esp32
+
+Configure o projeto com as opções desejadas, se necessário.
+
+idf.py menuconfig
+
+Compile o projeto.
+
+idf.py build
+
+Flash o firmware na placa ESP32.
+
+idf.py -p /dev/SEU_PORT_SERIAL flash
+
+## Dashboard no ThingsBoard
+
+Os dados coletados pelos sensores serão enviados para o ThingsBoard, uma plataforma de IoT de código aberto que permite criar dashboards para visualização de telemetria.
+
+Acesse o ThingsBoard e crie uma conta ou faça login em uma conta existente.
+
+Crie um novo dispositivo no ThingsBoard para a "HelpBand".
+
+Anote o token de acesso do dispositivo criado.
+
+No código-fonte do projeto, localize a parte responsável pelo envio dos dados para o ThingsBoard e insira o token de acesso do dispositivo criado.
+
+Divirta-se e explore as possibilidades dos sistemas embarcados com a "HelpBand"!
